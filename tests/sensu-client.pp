@@ -70,4 +70,27 @@ node default {
     filters           => $filters,
     filter_defaults   => $filter_defaults,
   }
+
+    $metrics = {
+      'loadmetrics' => { command => 'PATH=/opt/sensu/embedded/bin/:$PATH metrics-load.rb --scheme "sensu.metrics.:::shortname:::.load"', },
+      'cpumetrics' => { command => 'PATH=/opt/sensu/embedded/bin/:$PATH metrics-cpu-pcnt-usage.rb --scheme "sensu.metrics.:::shortname:::.cpu"', },
+      'netmetrics' => { command => 'PATH=/opt/sensu/embedded/bin/:$PATH metrics-interface.rb --scheme "sensu.metrics.:::shortname:::.interface"', },
+      'netstatmetrics' => { command => 'PATH=/opt/sensu/embedded/bin/:$PATH metrics-netstat-tcp.rb --scheme "sensu.metrics.:::shortname:::.netstat"', },
+      'diskmetrics' => { command => 'PATH=/opt/sensu/embedded/bin/:$PATH metrics-disk.rb --scheme "sensu.metrics.:::shortname:::.disk"', },
+      'diskfree' => { command => 'PATH=/opt/sensu/embedded/bin/:$PATH metrics-disk-usage.rb --scheme "sensu.metrics.:::shortname:::.df"', },
+      'memorymetrics' => { command => 'PATH=/opt/sensu/embedded/bin/:$PATH metrics-memory.rb --scheme "sensu.metrics.:::shortname:::.memory"', },
+      'threadmetrics' => { command => 'PATH=/opt/sensu/embedded/bin/:$PATH metrics-processes-threads-count.rb --scheme "sensu.metrics.:::shortname:::.threads"', },
+    }
+    # lint:endignore
+
+    $metrics_default = {
+        'type'        => 'metric',
+        'handlers'    => ['graphite_tcp','graphite_metrictank'],
+        'standalone'  => false,
+        'subscribers' => 'default',
+    }
+
+    create_resources(sensu::check, $metrics, $metrics_default)
+
+
 }
